@@ -27,12 +27,29 @@ class Vehicle():
     def applyForce(self, force):
         # We could add mass here if we want A = F / M
         self.acceleration.add(force)
+    
+    def cmp (a, b = 0.0):
+        if (abs(a-b) < 1e-5):
+            return 0
+        return  -1 if (a < b) else +1
+        
+    
+    def arrive(self, target):
+        desired = target - self.position
+        d = desired.mag()
+        if (cmp(d, self.velocity.magSq()/(2*self.maxforce)) <= 0):
+            desired = PVector(0, 0)
+        else:
+            desired.setMag(self.maxspeed)
+        steer = desired - self.velocity
+        steer.limit(self.maxforce)
+        self.applyForce(steer)
 
     def display(self):
         # Draw a triangle rotated in the direction of velocity
-        theta = self.velocity.heading()# + PI / 2
+        theta = self.velocity.heading() + PI / 2
         fill(127)
-        noStroke()
+        stroke(200)
         strokeWeight(1)
         with pushMatrix():
             translate(self.position.x, self.position.y)
