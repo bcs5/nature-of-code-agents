@@ -2,40 +2,27 @@
 
 class Food():
 
-    def __init__(self, x, y, vel):
-        self.acceleration = PVector(0, 0)
-        self.velocity = vel
-        self.position = PVector(x, y)
-        self.r = 6
-        self.maxspeed = 1.0
-        self.maxforce = 0.01
+    def __init__(self, margin):
+        self.margin = margin
+        self.position = self.randPos()
+        self.eaten = 0
+
+    def randPos(self):
+        x = random(self.margin, width-self.margin)
+        y = random(self.margin, height-self.margin)
+        return PVector(x, y)
 
     # Method to update location
-    def update(self):
-        # Update velocity
-        self.velocity.add(self.acceleration)
-        # Limit speed
-        self.velocity.limit(self.maxspeed)
-        self.position.add(self.velocity)
-        # Reset accelerationelertion to 0 each cycle
-        self.acceleration.mult(0)
-
-    def applyForce(self, force):
-        # We could add mass here if we want A = F / M
-        self.acceleration.add(force)
+    def update(self, vehicle_position):
+        if (vehicle_position.dist(self.position) <= 5):
+            self.position = self.randPos()
+            self.eaten += 1
 
     def display(self):
-        # Draw a triangle rotated in the direction of velocity
-        theta = self.velocity.heading()# + PI / 2
         fill(127)
-        noStroke()
+        stroke(200)
         strokeWeight(1)
+        textSize(self.margin);
+        text("comida: {}".format(self.eaten), self.margin, self.margin);
         with pushMatrix():
-            translate(self.position.x, self.position.y)
-            rotate(theta)
-            rect(0, 0, self.r, self.r)
-            # beginShape()
-            # vertex(0, -self.r * 2)
-            # vertex(-self.r, self.r * 2)
-            # vertex(self.r, self.r * 2)
-            # endShape(CLOSE)
+            ellipse(self.position.x, self.position.y, 10, 10)
